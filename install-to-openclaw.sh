@@ -28,7 +28,7 @@ log_step() {
 
 # 获取脚本所在目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+PROJECT_DIR="$SCRIPT_DIR"
 
 echo ""
 echo "=========================================="
@@ -94,6 +94,18 @@ for skill_dir in "${SKILLS_TO_INSTALL[@]}"; do
     # 验证 SKILL.md 文件
     if [ ! -f "$target_dir/SKILL.md" ]; then
         log_warn "$skill_name 没有 SKILL.md，可能不是有效的 OpenClaw skill"
+    fi
+
+    # 设置脚本可执行权限
+    if [ -d "$target_dir/scripts" ]; then
+        find "$target_dir/scripts" -name "*.sh" -type f -exec chmod +x {} \;
+        log_info "  - 设置 scripts 目录中 .sh 文件的可执行权限"
+    fi
+
+    # 设置 tools 目录脚本可执行权限
+    if [ -d "$target_dir/tools" ]; then
+        find "$target_dir/tools" -name "*.sh" -type f -exec chmod +x {} \;
+        log_info "  - 设置 tools 目录中 .sh 文件的可执行权限"
     fi
 
     log_info "✓ 已安装: $skill_name"
