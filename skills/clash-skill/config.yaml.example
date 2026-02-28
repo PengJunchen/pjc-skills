@@ -1,0 +1,265 @@
+# Clash 配置文件示例
+# 来源: https://github.com/MetaCubeX/mihomo
+
+#---------------------------------------
+# 基础配置
+#---------------------------------------
+
+# 混合端口: HTTP 和 SOCKS5 共用一个端口
+mixed-port: 7890
+
+# 允许局域网连接（可选，不建议开启）
+allow-lan: false
+
+# 绑定 IP 地址
+bind-address: "*"
+
+# IPv6 支持（如果系统支持）
+ipv6: true
+
+# 日志级别
+log-level: info
+
+# 外部控制器（Web UI 仪表板）
+external-controller: 127.0.0.1:9091
+external-ui: ui
+secret: ""
+
+#---------------------------------------
+# 配置模式
+#---------------------------------------
+
+mode: rule
+
+#---------------------------------------
+# 全局配置
+#---------------------------------------
+
+# 全局超时设置
+global-client-filters:
+  - "0.0.0.0/0"
+
+#---------------------------------------
+# DNS 配置
+#---------------------------------------
+
+dns:
+  enable: true                      # 启用 DNS
+  enhanced-mode: fake-ip           # 增强模式：fake-ip
+  fake-ip-range: 198.18.0.1/16     # Fake IP 段
+  fake-ip-filter:                  # Fake IP 过滤列表
+    - "*.lan"
+    - "localhost.ptlogin2.qq.com"
+
+  # 主 DNS（国内）
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 114.114.114.114
+
+  # 后备 DNS（国外）
+  fallback:
+    - https://1.1.1.1/dns-query
+    - https://8.8.8.8/dns-query
+    - https://185.222.222.222/dns-query
+
+  # Fake IP 模式下的 DNS
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+      - 0.0.0.0/32
+    domain:
+      - "+.google.com"
+      - "+.facebook.com"
+      - "+.youtube.com"
+      - "+.github.com"
+      - "+.googleusercontent.com"
+      - "+.gvt1.com"
+      - "++.gvt2.com"
+      - "++.gvt3.com"
+
+#---------------------------------------
+# 代理配置（示例）
+#---------------------------------------
+
+# 服务器列表（通过订阅链接自动填充）
+proxies:
+  # 示例: Shadowsocks
+  # - name: "SS示例"
+  #   type: ss
+  #   server: example.com
+  #   port: 443
+  #   cipher: aes-128-gcm
+  #   password: "your-password"
+
+  # 示例: VMess
+  # - name: "VMess示例"
+  #   type: vmess
+  #   server: example.com
+  #   port: 443
+  #   uuid: your-uuid
+  #   alterId: 0
+  #   cipher: auto
+
+  # 示例: Trojan
+  # - name: "Trojan示例"
+  #   type: trojan
+  #   server: example.com
+  #   port: 443
+  #   password: "your-password"
+  #   sni: example.com
+
+  # 示例: VLESS
+  # - name: "VLESS示例"
+  #   type: vless
+  #   server: example.com
+  #   port: 443
+  #   uuid: your-uuid
+  #   network: ws
+  #   ws-opts:
+  #     path: /path
+  #     headers:
+  #       Host: example.com
+
+#---------------------------------------
+# 代理组配置
+#---------------------------------------
+
+proxy-groups:
+  # 自动选择测试可用性
+  - name: "自动选择"
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 150
+    use:
+      - all
+
+  # 负载均衡
+  - name: "负载均衡"
+    type: load-balance
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    use:
+      - all
+
+  # 手动选择
+  - name: "手动选择"
+    type: select
+    use:
+      - all
+
+  # 地区组（示例）
+  - name: "日本"
+    type: select
+    use:
+      - all
+    filter: "日本|JP|Japan"
+
+  - name: "美国"
+    type: select
+    use:
+      - all
+    filter: "美国|US|United States|America"
+
+  - name: "香港"
+    type: select
+    use:
+      - all
+    filter: "香港|HK|Hong Kong"
+
+  - name: "台湾"
+    type: select
+    use:
+      - all
+    filter: "台湾|TW|Taiwan"
+
+  - name: "新加坡"
+    type: select
+    use:
+      - all
+    filter: "新加坡|SG|Singapore"
+
+  # 最终代理组（选择使用的代理组）
+  - name: "最终选择"
+    type: select
+    proxies:
+      - 自动选择
+      - 负载均衡
+      - 手动选择
+      - 日本
+      - 美国
+      - 香港
+      - 台湾
+      - 新加坡
+      - DIRECT
+      - REJECT
+
+#---------------------------------------
+# 规则配置
+#---------------------------------------
+
+rules:
+  # 局域网直连
+  - DOMAIN-SUFFIX,local,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT
+
+  # 常用国内网站直连
+  - DOMAIN-SUFFIX,cn,DIRECT
+  - DOMAIN-KEYWORD,baidu,DIRECT
+  - DOMAIN-KEYWORD,taobao,DIRECT
+  - DOMAIN-KEYWORD,alipay,DIRECT
+  - DOMAIN-KEYWORD,tmall,DIRECT
+  - DOMAIN-KEYWORD,jd,DIRECT
+  - DOMAIN-KEYWORD,qq,DIRECT
+  - DOMAIN-KEYWORD,wechat,DIRECT
+
+  # 国内 IP 段直连
+  - GEOIP,CN,DIRECT
+
+  # 常用国外网站走代理
+  - DOMAIN-SUFFIX,google.com,最终选择
+  - DOMAIN-SUFFIX,youtube.com,最终选择
+  - DOMAIN-SUFFIX,facebook.com,最终选择
+  - DOMAIN-SUFFIX,twitter.com,最终选择
+  - DOMAIN-SUFFIX,instagram.com,最终选择
+  - DOMAIN-SUFFIX,github.com,最终选择
+  - DOMAIN-SUFFIX,openai.com,最终选择
+
+  # 其他全部走代理
+  - MATCH,最终选择
+
+#---------------------------------------
+# 其他配置
+#---------------------------------------
+
+# 全局 TLS 配置
+tls:
+  enable: true                    # 启用 TLS
+  prefer: https                   # 优先 HTTPS
+  skip-cert-verify: false         # 跳过证书验证（不推荐）
+
+# 全局客户端指纹
+global-client-fingerprint:
+  - chrome
+
+#---------------------------------------
+# 配置说明
+#---------------------------------------
+
+# 安装后，你可以通过订阅链接获取完整的配置。
+# 订阅链接会生成包含所有代理节点的配置文件。
+
+# 配置文件优先级:
+# 1. 通过订阅链接下载的配置（完整）
+# 2. 本地 config.yaml（参考）
+# 3. 默认配置
+
+# 推荐做法:
+# 1. 通过 install.sh 脚本安装，会自动设置订阅链接
+# 2. 订阅配置会覆盖本示例文件的大部分内容
+# 3. 如需自定义，可以在订阅配置基础上修改

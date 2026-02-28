@@ -1,0 +1,22 @@
+{
+  "name": "pjc-skills",
+  "owner": {
+    "name": "PJC",
+    "email": "pengjunchen@outlook.com"
+  },
+  "metadata": {
+    "description": "Skills shared by PJC for improving daily work efficiency",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "proxy-skills",
+      "description": "Proxy and network management skills",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/clash-skill"
+      ]
+    }
+  ]
+}

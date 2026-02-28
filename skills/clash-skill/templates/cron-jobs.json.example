@@ -1,0 +1,351 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "name": "clash-monitor",
+      "schedule": "* * * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh\"",
+      "description": "Monitor and restart Clash if not running",
+      "enabled": true
+    }
+  ]
+}
+
+---
+
+## Cron 任务配置说明
+
+本文件是 OpenClaw Cron 任务配置模板，用于定期监控 Clash 进程。
+
+### ⚠️ 重要：路径配置说明
+
+**cron 任务中的路径必须使用绝对路径**，因为 cron 环境无法使用相对路径依赖当前工作目录。
+
+**常见 OpenClaw 安装位置：**
+
+| 安装类型 | 路径 | 示例命令 |
+|---------|------|---------|
+| 默认用户安装 | `$HOME/.openclaw/workspace` | `bash "$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh"` |
+| 系统安装 | `/opt/openclaw/workspace` | `bash "/opt/openclaw/workspace/clash-skill/scripts/clash-monitor.sh"` |
+| 自定义路径 | `/your/custom/path` | `bash "/your/custom/path/clash-skill/scripts/clash-monitor.sh"` |
+
+**推荐做法：使用 `$HOME` 环境变量**
+
+```bash
+# 推荐：使用 $HOME 环境变量（适用于大多数用户）
+bash "$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh"
+```
+
+**如何找到你的实际路径：**
+
+```bash
+# 方法 1: 查找 clash-monitor.sh 位置
+find ~ -name "clash-monitor.sh" 2>/dev/null
+
+# 方法 2: 检查 OpenClaw 配置文件
+cat ~/.openclaw/openclaw.json | grep workspace
+
+# 方法 3: 查看 clash-skill 相对于 workspace 的位置
+pwd  # 应该在 workspace 根目录
+ls -lh clash-skill/scripts/clash-monitor.sh
+```
+
+### 字段说明
+
+| 字段 | 说明 | 示例 |
+|------|------|------|
+| `version` | 配置文件版本 | `1`（固定） |
+| `name` | 任务名称 | `"clash-monitor"` |
+| `schedule` | Cron 表达式 | `"* * * * *"`（每分钟） |
+| `command` | 要执行的命令 | 完整的 bash 脚本路径 |
+| `description` | 任务描述 | `"Monitor and restart Clash if not running"` |
+| `enabled` | 是否启用 | `true` 或 `false` |
+
+### Cron 表达式格式
+
+```
+┌────────── 分钟 (0 - 59)
+│ ┌──────── 小时 (0 - 23)
+│ │ ┌────── 日期 (1 - 31)
+│ │ │ ┌──── 月份 (1 - 12)
+│ │ │ │ ┌── 星期 (0 - 7, 0和7都表示周日)
+│ │ │ │ │
+* * * * *
+```
+
+**常见示例：**
+
+| Cron 表达式 | 说明 |
+|-----------|------|
+| `* * * * *` | 每分钟 |
+| `*/5 * * * *` | 每 5 分钟 |
+| `0 * * * *` | 每小时 |
+| `0 0 * * *` | 每天 0 点 |
+| `0 */6 * * *` | 每 6 小时 |
+| `0 0 * * 0` | 每周日 0 点 |
+
+### 使用方法
+
+1. 确定你的 OpenClaw workspace 路径
+   ```bash
+   # 方法 1: 查找 clash-skill 位置
+   find ~ -name "clash-monitor.sh" 2>/dev/null
+
+   # 方法 2: 查看配置
+   cat ~/.openclaw/openclaw.json | grep workspace
+   ```
+
+2. 复制本文件的 JSON 配置，**修改 command 路径为你的实际路径**
+
+3. 添加到 `~/.openclaw/cron/jobs.json`
+4. 如果文件不存在，创建它并添加以下内容：
+
+```json
+{
+  "version": 1,
+  "jobs": [
+    {
+      "name": "clash-monitor",
+      "schedule": "* * * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh\"",
+      "description": "Monitor and restart Clash if not running",
+      "enabled": true
+    }
+  ]
+}
+```
+
+**重要**: 将 `$HOME/.openclaw/workspace` 替换为你的实际路径，例如：
+- `/home/yourname/.openclaw/workspace` (用户安装)
+- `/opt/openclaw/workspace` (系统安装)
+- `/custom/path/to/workspace` (自定义路径)
+
+5. 重启 OpenClaw Gateway 或等待 Cron 系统加载新配置
+
+---
+
+## 推荐配置
+
+### 方案 1：每分钟检查（推荐）
+
+```json
+{
+  "version": 1,
+  "jobs": [
+    {
+      "name": "clash-monitor",
+      "schedule": "* * * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh\"",
+      "description": "Monitor and restart Clash if not running (every minute)",
+      "enabled": true
+    }
+  ]
+}
+```
+
+**优点**: 检测失败后 1 分钟内自动恢复
+**缺点**: 略增加系统开销
+**注意**: 将 `$HOME` 替换为你的实际 home 目录（如 `/home/yourname`）
+
+---
+
+### 方案 2：每 5 分钟检查
+
+```json
+{
+  "version": 1,
+  "jobs": [
+    {
+      "name": "clash-monitor",
+      "schedule": "*/5 * * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh\"",
+      "description": "Monitor and restart Clash if not running (every 5 minutes)",
+      "enabled": true
+    }
+  ]
+}
+```
+
+**优点**: 降低系统开销
+**缺点**: 检测失败后最多 5 分钟恢复
+**注意**: 将 `$HOME` 替换为你的实际 home 目录（如 `/home/yourname`）
+
+---
+
+### 方案 3：结合 OpenClaw 启动钩子
+
+如果你已经配置了 BOOT.md 启动钩子，可以降低 Cron 检查频率：
+
+```json
+{
+  "version": 1,
+  "jobs": [
+    {
+      "name": "clash-monitor",
+      "schedule": "*/10 * * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh\"",
+      "description": "Monitor and restart Clash if not running (every 10 minutes, backup for BOOT.md hook)",
+      "enabled": true
+    }
+  ]
+}
+```
+
+**工作原理**:
+- BOOT.md hook：Gateway 启动时立即启动 Clash
+- Cron monitor：每 10 分钟检查一次，确保 Crash 后恢复
+**注意**: 将 `$HOME` 替换为你的实际 home 目录（如 `/home/yourname`）
+
+---
+
+## 多任务配置示例
+
+如果你还有其他定时任务，可以添加到 `jobs` 数组中：
+
+**注意**: 请将下面的 `$HOME` 替换为你的实际 home 目录（如 `/home/yourname`）
+
+```json
+{
+  "version": 1,
+  "jobs": [
+    {
+      "name": "clash-monitor",
+      "schedule": "* * * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh\"",
+      "description": "Monitor and restart Clash if not running",
+      "enabled": true
+    },
+    {
+      "name": "log-cleanup",
+      "schedule": "0 3 * * *",
+      "command": "find /tmp -name '*.log' -mtime +7 -delete",
+      "description": "Clean up old log files daily at 3 AM",
+      "enabled": true
+    },
+    {
+      "name": "system-check",
+      "schedule": "0 */12 * * *",
+      "command": "bash \"$HOME/.openclaw/workspace/scripts/system-check.sh\"",
+      "description": "Run system health check every 12 hours",
+      "enabled": true
+    }
+  ]
+}
+```
+
+---
+
+## 监控日志
+
+Cron 监控脚本会将日志写入 `/tmp/clash-monitor.log`：
+
+```bash
+# 实时查看监控日志
+tail -f /tmp/clash-monitor.log
+
+# 查看最近的监控记录
+tail -20 /tmp/clash-monitor.log
+
+# 查看今天的所有监控记录
+grep "$(date +%Y-%m-%d)" /tmp/clash-monitor.log
+```
+
+**日志示例：**
+```
+[2025-01-30 03:10:01] --- Clash 监控检查 ---
+[2025-01-30 03:10:01] ✓ Clash 正在运行 (PID: 12345)
+
+[2025-01-30 03:11:01] --- Clash 监控检查 ---
+[2025-01-30 03:11:01] ✓ Clash 正在运行 (PID: 12345)
+
+[2025-01-30 03:12:01] --- Clash 监控检查 ---
+[2025-01-30 03:12:01] ✗ Clash 未运行，正在启动...
+[2025-01-30 03:12:03] ✓ Clash 启动成功 (PID: 67890)
+```
+
+---
+
+## 验证 Cron 任务
+
+### 查看 Cron 任务状态
+
+```bash
+# 方法 1: 检查配置文件
+cat ~/.openclaw/cron/jobs.json
+
+# 方法 2: 使用 OpenClaw CLI（如果支持）
+openclaw cron list
+```
+
+### 测试监控脚本
+
+```bash
+# 手动运行监控脚本（根据你的实际路径调整）
+bash "$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh"
+
+# 查看输出
+cat /tmp/clash-monitor.log
+```
+
+### 检查自动重启
+
+```bash
+# 停止 Clash（根据你的实际路径调整脚本路径）
+bash "$HOME/.openclaw/workspace/clash-skill/scripts/clash.sh" stop
+
+# 等待 1 分钟（或根据 Cron 配置）
+sleep 60
+
+# 检查 Clash 是否自动启动
+bash "$HOME/.openclaw/workspace/clash-skill/scripts/clash.sh" status
+```
+
+---
+
+## 故障排查
+
+### 问题：Cron 任务没有执行
+
+**检查项：**
+
+1. 配置文件路径是否正确
+   ```bash
+   ls -lh ~/.openclaw/cron/jobs.json
+   ```
+
+2. 配置文件格式是否正确（JSON）
+   ```bash
+   cat ~/.openclaw/cron/jobs.json | jq
+   ```
+
+3. 脚本是否有执行权限（根据你的实际路径调整）
+   ```bash
+   ls -lh "$HOME/.openclaw/workspace/clash-skill/scripts/clash-monitor.sh"
+   ```
+
+4. 查看日志是否有错误
+   ```bash
+   tail -50 /tmp/clash-monitor.log
+   ```
+
+---
+
+## 注意事项
+
+1. **Cron 频率**: 每分钟检查可能增加系统开销，建议根据实际情况调整
+2. **日志文件**: 监控脚本会自动清理 7 天前的日志
+3. **与 BOOT.md 配合**: 建议同时配置 BOOT.md 启动钩子和 Cron 监控
+4. **禁用监控**: 将 `enabled` 设置为 `false` 可以临时禁用
+
+---
+
+## 相关文档
+
+- **[安装指南](../docs/SETUP.md)** - 完整安装步骤
+- **[使用指南](../docs/USAGE.md)** - 日常使用方法
+- **[故障排查](../docs/TROUBLESHOOTING.md)** - 常见问题解决
+
+---
+
+**最后更新**: 2026-02-27
+**模板版本**: 1.0

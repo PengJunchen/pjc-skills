@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OpenClaw specific
+.openclaw/workspace/*/BOOT.md
+.openclaw/cron/jobs.json
+
+# Clash specific
+~/.config/clash/config.yaml
+~/.config/clash/clash.pid
+/tmp/clash*.log
+
+# Skill runtime data
+skills/*/data/
+skills/*/logs/
+skills/*/cache/
