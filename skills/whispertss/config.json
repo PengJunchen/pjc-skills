@@ -1,0 +1,10 @@
+{
+    "model": "base",
+    "device": "cpu",
+    "compute_type": "int8",
+    "language": "zh",
+    "beam_size": 5,
+    "vad_filter": true,
+    "model_dir": "models",
+    "convert_to_simplified": true
+}
