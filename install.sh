@@ -95,6 +95,28 @@ else
     log_warn "clash-skill 目录不存在"
 fi
 
+# 初始化 gemini-cli
+log_step "初始化 gemini-cli..."
+
+GEMINI_SKILL_DIR="$PROJECT_DIR/skills/gemini-cli"
+
+if [ -d "$GEMINI_SKILL_DIR" ]; then
+    log_info "gemini-cli 已存在"
+    
+    # 检查 websockets 依赖
+    if ! python3 -c "import websockets" 2>/dev/null; then
+        log_warn "websockets 未安装"
+        echo ""
+        echo "请运行以下命令安装依赖:"
+        echo "  pip install websockets"
+        echo ""
+    else
+        log_info "websockets 已安装"
+    fi
+else
+    log_warn "gemini-cli 目录不存在"
+fi
+
 # 配置 OpenClaw 集成
 if [ "$ENVIRONMENT" = "openclaw" ]; then
     log_step "配置 OpenClaw 集成..."
@@ -178,6 +200,7 @@ echo "  Workspace: $WORKSPACE_DIR"
 echo ""
 echo "📦 已安装技能:"
 echo "  - clash-skill (代理管理)"
+echo "  - gemini-cli (Gemini AI 自动化)"
 echo ""
 echo "🚀 下一步操作:"
 echo ""
@@ -197,6 +220,12 @@ echo ""
 echo "  5. 查看 BOOT.md 配置:"
 echo "     cat $BOOT_FILE"
 echo ""
+echo "  6. 使用 gemini-cli (Gemini AI 自动化):"
+echo "     pip install websockets"
+echo "     browser(action='start', profile='chrome')"
+echo "     browser(action='open', url='https://gemini.google.com/app')"
+echo "     py $GEMINI_SKILL_DIR/scripts/gemini_image.py --prompt '一只猫' --style 油画"
+echo ""
 
 echo "📚 文档资源:"
 echo "  - 项目 README: $PROJECT_DIR/README.md"
@@ -204,6 +233,7 @@ echo "  - clash-skill 文档: $CLASH_SKILL_DIR/README.md"
 echo "  - 安装指南: $CLASH_SKILL_DIR/docs/SETUP.md"
 echo "  - 使用指南: $CLASH_SKILL_DIR/docs/USAGE.md"
 echo "  - 故障排查: $CLASH_SKILL_DIR/docs/TROUBLESHOOTING.md"
+echo "  - gemini-cli 文档: $GEMINI_SKILL_DIR/SKILL.md"
 echo ""
 echo "✅ 安装完成！"
 echo ""

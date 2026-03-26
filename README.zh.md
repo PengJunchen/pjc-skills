@@ -48,6 +48,7 @@ bash pjc-skills/install.sh
 | 插件 | 描述 | 技能 |
 |------|------|------|
 | **proxy-skills** | 代理和网络管理 | [clash-skill](#clash-skill) |
+| **gemini-cli** | Gemini AI 自动化操作 | [gemini-cli](#gemini-cli) |
 
 ## 更新技能
 
@@ -104,22 +105,68 @@ curl -I https://www.google.com
 - [USAGE.md](skills/clash-skill/docs/USAGE.md) - 使用技巧
 - [TROUBLESHOOTING.md](skills/clash-skill/docs/TROUBLESHOOTING.md) - 常见问题
 
+### Gemini CLI
+
+#### gemini-cli
+
+Gemini AI 自动化技能，通过 Chrome DevTools Protocol (CDP) 实现，继承 Chrome 登录状态。
+
+**特性：**
+- ✅ 图片生成，支持风格选择
+- ✅ 与 Gemini 对话交互
+- ✅ 会话管理（新对话、状态检查）
+- ✅ 继承 Chrome Google 账号登录状态
+- ✅ Python API 和 CLI 支持
+
+**平台支持：** Windows / Linux / macOS（需要启用 CDP 的 Chrome）
+
+**快速开始：**
+
+```bash
+# 安装依赖
+pip install websockets
+
+# 启动 Chrome 并启用 CDP（在 OpenClaw 中）
+browser(action="start", profile="chrome")
+browser(action="open", url="https://gemini.google.com/app")
+
+# 生成图片
+py skills/gemini-cli/scripts/gemini_image.py --prompt "一只可爱的猫" --style 油画
+
+# 与 Gemini 对话
+py skills/gemini-cli/scripts/gemini_chat.py --message "什么是量子计算?"
+
+# 检查状态
+py skills/gemini-cli/scripts/gemini_image.py --status
+```
+
+**文档：**
+- [SKILL.md](skills/gemini-cli/SKILL.md) - 完整技能文档
+
 ## 项目结构
 
 ```
 pjc-skills/
 ├── skills/
-│   └── clash-skill/           # Clash 代理管理技能
+│   ├── clash-skill/           # Clash 代理管理技能
+│   │   ├── SKILL.md          # 技能文档
+│   │   ├── README.md         # 技能说明
+│   │   ├── scripts/          # Shell 脚本
+│   │   │   ├── install.sh     # 安装脚本
+│   │   │   ├── clash.sh      # 控制脚本
+│   │   │   ├── clash-monitor.sh  # 监控脚本
+│   │   │   └── proxy.sh      # 代理环境脚本
+│   │   ├── docs/             # 文档
+│   │   ├── config/           # 配置模板
+│   │   └── templates/        # 集成模板
+│   └── gemini-cli/           # Gemini AI 自动化技能
 │       ├── SKILL.md          # 技能文档
-│       ├── README.md         # 技能说明
-│       ├── scripts/          # Shell 脚本
-│       │   ├── install.sh     # 安装脚本
-│       │   ├── clash.sh      # 控制脚本
-│       │   ├── clash-monitor.sh  # 监控脚本
-│       │   └── proxy.sh      # 代理环境脚本
-│       ├── docs/             # 文档
-│       ├── config/           # 配置模板
-│       └── templates/        # 集成模板
+│       ├── scripts/          # Python 脚本
+│       │   ├── gemini_image.py  # 图片生成
+│       │   └── gemini_chat.py   # 对话交互
+│       └── lib/              # Python 库
+│           ├── cdp_client.py    # CDP 客户端
+│           └── gemini_client.py # Gemini 客户端
 ├── README.md                 # 英文说明
 ├── README.zh.md              # 中文说明（本文件）
 ├── install.sh                # Bash 安装脚本
@@ -158,4 +205,4 @@ pjc-skills/
 ---
 
 **创建者**: PJC
-**最后更新**: 2026-02-27
+**最后更新**: 2026-03-26

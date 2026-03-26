@@ -111,6 +111,29 @@ if (Test-Path $ClashSkillDir) {
     Write-Warn "clash-skill 目录不存在"
 }
 
+# 初始化 gemini-cli
+Write-Step "初始化 gemini-cli..."
+
+$GeminiSkillDir = Join-Path $SkillsDir "gemini-cli"
+
+if (Test-Path $GeminiSkillDir) {
+    Write-Info "gemini-cli 已存在"
+    
+    # 检查 websockets 依赖
+    try {
+        python -c "import websockets" 2>$null
+        Write-Info "websockets 已安装"
+    } catch {
+        Write-Warn "websockets 未安装"
+        Write-Host ""
+        Write-Host "请运行以下命令安装依赖:" -ForegroundColor Yellow
+        Write-Host "  pip install websockets" -ForegroundColor Gray
+        Write-Host ""
+    }
+} else {
+    Write-Warn "gemini-cli 目录不存在"
+}
+
 # 配置 OpenClaw 集成
 if ($Environment -eq "openclaw") {
     Write-Step "配置 OpenClaw 集成..."
@@ -208,6 +231,7 @@ Write-Host "  Workspace: $WorkspaceDir" -ForegroundColor Gray
 Write-Host ""
 Write-Host "📦 已安装技能:" -ForegroundColor White
 Write-Host "  - clash-skill (代理管理)" -ForegroundColor Gray
+Write-Host "  - gemini-cli (Gemini AI 自动化)" -ForegroundColor Gray
 Write-Host ""
 Write-Host "🚀 下一步操作:" -ForegroundColor White
 Write-Host ""
@@ -226,8 +250,14 @@ if ($Environment -eq "openclaw") {
     Write-Host "     wsl curl -I https://www.google.com" -ForegroundColor Gray
     Write-Host ""
     Write-Host "  5. 查看 BOOT.md 配置:" -ForegroundColor White
-    Write-Host "     cat $BootFile" -ForegroundColor Gray
-    Write-Host ""
+Write-Host "     cat $BootFile" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  6. 使用 gemini-cli (Gemini AI 自动化):" -ForegroundColor White
+Write-Host "     pip install websockets" -ForegroundColor Gray
+Write-Host "     browser(action='start', profile='chrome')" -ForegroundColor Gray
+Write-Host "     browser(action='open', url='https://gemini.google.com/app')" -ForegroundColor Gray
+Write-Host "     py $GeminiSkillDir\scripts\gemini_image.py --prompt '一只猫' --style 油画" -ForegroundColor Gray
+Write-Host ""
 } else {
     Write-Host "  1. 注册插件市场:" -ForegroundColor White
     Write-Host "     /plugin marketplace add pjc/pjc-skills" -ForegroundColor Gray
@@ -251,6 +281,8 @@ $UsageDoc = Join-Path $ClashSkillDir "docs\USAGE.md"
 Write-Host "  - 使用指南: $UsageDoc" -ForegroundColor Gray
 $TroubleshootDoc = Join-Path $ClashSkillDir "docs\TROUBLESHOOTING.md"
 Write-Host "  - 故障排查: $TroubleshootDoc" -ForegroundColor Gray
+$GeminiSkillDoc = Join-Path $GeminiSkillDir "SKILL.md"
+Write-Host "  - gemini-cli 文档: $GeminiSkillDoc" -ForegroundColor Gray
 Write-Host ""
 Write-Host "✅ 安装完成！" -ForegroundColor Green
 Write-Host ""

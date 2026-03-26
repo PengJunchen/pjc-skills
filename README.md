@@ -48,6 +48,7 @@ bash pjc-skills/install.sh
 | Plugin | Description | Skills |
 |--------|-------------|--------|
 | **proxy-skills** | Proxy and network management | [clash-skill](#clash-skill) |
+| **gemini-cli** | Gemini AI automation via CDP | [gemini-cli](#gemini-cli) |
 
 ## Update Skills
 
@@ -104,22 +105,68 @@ curl -I https://www.google.com
 - [USAGE.md](skills/clash-sill/docs/USAGE.md) - Usage tips
 - [TROUBLESHOOTING.md](skills/clash-skill/docs/TROUBLESHOOTING.md) - Common issues
 
+### Gemini CLI
+
+#### gemini-cli
+
+Gemini AI automation skill via Chrome DevTools Protocol (CDP), inherits Chrome login state.
+
+**Features:**
+- ✅ Image generation with style selection
+- ✅ Chat interaction with Gemini
+- ✅ Session management (new chat, status check)
+- ✅ Inherits Chrome Google account login state
+- ✅ Python API and CLI support
+
+**Platform Support:** Windows / Linux / macOS (requires Chrome with CDP enabled)
+
+**Quick Start:**
+
+```bash
+# Install dependencies
+pip install websockets
+
+# Start Chrome with CDP (in OpenClaw)
+browser(action="start", profile="chrome")
+browser(action="open", url="https://gemini.google.com/app")
+
+# Generate image
+py skills/gemini-cli/scripts/gemini_image.py --prompt "一只可爱的猫" --style 油画
+
+# Chat with Gemini
+py skills/gemini-cli/scripts/gemini_chat.py --message "什么是量子计算?"
+
+# Check status
+py skills/gemini-cli/scripts/gemini_image.py --status
+```
+
+**Documentation:**
+- [SKILL.md](skills/gemini-cli/SKILL.md) - Complete skill documentation
+
 ## Project Structure
 
 ```
 pjc-skills/
 ├── skills/
-│   └── clash-skill/           # Clash proxy management skill
+│   ├── clash-skill/           # Clash proxy management skill
+│   │   ├── SKILL.md          # Skill documentation
+│   │   ├── README.md         # Skill README
+│   │   ├── scripts/          # Shell scripts
+│   │   │   ├── install.sh     # Installation script
+│   │   │   ├── clash.sh      # Control script
+│   │   │   ├── clash-monitor.sh  # Monitoring script
+│   │   │   └── proxy.sh      # Proxy environment script
+│   │   ├── docs/             # Documentation
+│   │   ├── config/           # Configuration templates
+│   │   └── templates/        # Integration templates
+│   └── gemini-cli/           # Gemini AI automation skill
 │       ├── SKILL.md          # Skill documentation
-│       ├── README.md         # Skill README
-│       ├── scripts/          # Shell scripts
-│       │   ├── install.sh     # Installation script
-│       │   ├── clash.sh      # Control script
-│       │   ├── clash-monitor.sh  # Monitoring script
-│       │   └── proxy.sh      # Proxy environment script
-│       ├── docs/             # Documentation
-│       ├── config/           # Configuration templates
-│       └── templates/        # Integration templates
+│       ├── scripts/          # Python scripts
+│       │   ├── gemini_image.py  # Image generation
+│       │   └── gemini_chat.py   # Chat interaction
+│       └── lib/              # Python library
+│           ├── cdp_client.py    # CDP client
+│           └── gemini_client.py # Gemini client
 ├── README.md                 # This file
 ├── README.zh.md              # Chinese version
 ├── install.sh                # Bash installation script
@@ -158,4 +205,4 @@ For issues and questions:
 ---
 
 **Created by**: PJC
-**Last updated**: 2026-02-27
+**Last updated**: 2026-03-26
